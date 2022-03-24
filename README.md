@@ -1,11 +1,5 @@
 # gengine practice
 
-### Build Plugin (hot load)
-
-```
-go build --buildmode=plugin -o plugins/hello.so plugins/hello.go
-```
-
 ### Run Test
 
 ```
