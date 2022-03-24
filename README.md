@@ -1,9 +1,15 @@
 # gengine practice
 
-### Run
+### Build Plugin (hot load)
 
 ```
-go test -v gengine_test.go
+go build --buildmode=plugin -o plugins/hello.so plugins/hello.go
+```
+
+### Run Test
+
+```
+go test -v test/gengine_test.go
 ```
 
 ### Output
