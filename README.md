@@ -55,3 +55,10 @@ action3
 --- PASS: TestPool (0.02s)
 PASS
 ```
+
+### Plugin (Hot Update)
+
+```
+go build -buildmode=plugin -o=test/plugin/plugin_M_m.so test/plugin/plugin_superman.go
+go test -v test/plugin/plugin_test.go
+```
