@@ -89,7 +89,7 @@ func TestSingle(t *testing.T) {
 
 	//构建规则
 	ruleBuilder := builder.NewRuleBuilder(dataContext)
-	if err := ruleBuilder.BuildRuleWithIncremental(rules); err != nil { //BuildRuleWithIncremental增量添加规则
+	if err := ruleBuilder.BuildRuleFromString(rules); err != nil {
 		t.Fatalf("build rule err: %v\n", err)
 	}
 
@@ -103,6 +103,15 @@ func TestSingle(t *testing.T) {
 	t.Log(resultMap)
 
 	//输出学生成绩等级指标
+	t.Logf("student.Grade=%s\n", student.Grade)
+
+	//修改参数再次测试
+	fmt.Println("--------------------修改参数再次测试")
+	student.Score = 100
+	dataContext.Add("globalvar", 200) //会覆盖原来的值
+	if err := eng.Execute(ruleBuilder, true); err != nil {
+		t.Fatalf("execute rule error: %v\n", err)
+	}
 	t.Logf("student.Grade=%s\n", student.Grade)
 }
 
@@ -137,5 +146,18 @@ func TestPool(t *testing.T) {
 	t.Log(resultMap)
 
 	//输出学生成绩等级指标
+	t.Logf("student.Grade=%s\n", student.Grade)
+
+	//修改参数再次测试
+	fmt.Println("--------------------修改参数再次测试")
+	student.Score = 100 //修改分数以得到不同的等级
+	data = map[string]interface{}{
+		"globalvar": 200,     //注入一个全局变量，所有规则里都可以拿到它
+		"student":   student, //注入一个结构体变量
+	}
+	engPool.Execute(data, true)
+	if err != nil {
+		t.Fatalf("execute rule error: %v\n", err)
+	}
 	t.Logf("student.Grade=%s\n", student.Grade)
 }
