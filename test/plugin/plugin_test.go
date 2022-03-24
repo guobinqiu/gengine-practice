@@ -10,6 +10,10 @@ import (
 	"testing"
 )
 
+type Man interface {
+	SaveLive() error
+}
+
 func TestPlugin(t *testing.T) {
 	dir, err := os.Getwd()
 	if err != nil {
