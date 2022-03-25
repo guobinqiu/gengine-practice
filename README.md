@@ -10,7 +10,7 @@ go build -buildmode=plugin -o plugin/plugin_Cat_c.so plugin/plugin_cat.go
 ### Run Test
 
 ```
-go test -v test/gengine_test.go
+go test -v gengine_test.go
 ```
 
 ### Output
@@ -18,9 +18,9 @@ go test -v test/gengine_test.go
 ```
 === RUN   TestSingle
 rule name: rule2 local var: 3 global var: 2
-action3
-action2
 action1
+action2
+action3
 rule name: rule1 local var: 1 global var: 2
 action1
 action2
@@ -61,11 +61,12 @@ action3
     gengine_test.go:163: student.Grade=你简直是个天才
 --- PASS: TestPool (0.02s)
 === RUN   TestPlugin
-汪汪汪
---- PASS: TestPlugin (0.00s)
+喵喵喵
+--- PASS: TestPlugin (0.01s)
 === RUN   TestPluginGengine
+喵喵喵
 汪汪汪
---- PASS: TestPluginGengine (0.00s)
+--- PASS: TestPluginGengine (0.02s)
 PASS
-ok  	command-line-arguments	0.057s
+ok  	command-line-arguments	0.079s
 ```
