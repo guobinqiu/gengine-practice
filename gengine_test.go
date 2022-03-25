@@ -170,13 +170,13 @@ type Animal interface {
 
 func TestPlugin(t *testing.T) {
 	// 1. open the so file to load the symbols
-	plug, err := plugin.Open("plugin/plugin_Dog_d.so")
+	plug, err := plugin.Open("plugin/plugin_Cat_c.so")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// 2. look up a symbol (an exported function or variable)
-	sym, err := plug.Lookup("Dog") //大写
+	sym, err := plug.Lookup("Cat") //大写
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -194,6 +194,7 @@ func TestPlugin(t *testing.T) {
 const template2 = `
 rule "plugin gengine" "测试gengine基于插件的热加载"
 begin
+c.Action()
 d.Action()
 end
 `
@@ -201,8 +202,15 @@ end
 func TestPluginGengine(t *testing.T) {
 	dataContext := context.NewDataContext()
 
-	//PluginLoader这个方法扩展性设计的不太好，插件可能同时导出多个变量
-	_, _, e := dataContext.PluginLoader("plugin/plugin_Dog_d.so") //Dog：插件导出的变量名；d：规则内使用的变量名
+	//PluginLoader可以重复使用
+	//Cat：插件导出的变量名；c：规则内使用的变量名
+	_, _, e := dataContext.PluginLoader("plugin/plugin_Cat_c.so")
+	if e != nil {
+		panic(e)
+	}
+
+	//Dog：插件导出的变量名；d：规则内使用的变量名
+	_, _, e = dataContext.PluginLoader("plugin/plugin_Dog_d.so")
 	if e != nil {
 		panic(e)
 	}

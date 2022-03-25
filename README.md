@@ -4,6 +4,7 @@
 
 ```
 go build -buildmode=plugin -o plugin/plugin_Dog_d.so plugin/plugin_dog.go
+go build -buildmode=plugin -o plugin/plugin_Cat_c.so plugin/plugin_cat.go
 ```
 
 ### Run Test
