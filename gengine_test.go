@@ -1,4 +1,4 @@
-package gengine_practice
+package test
 
 import (
 	"fmt"
