@@ -1,15 +1,16 @@
-package test
+package gengine_practice
 
 import (
 	"fmt"
 	"github.com/bilibili/gengine/builder"
 	"github.com/bilibili/gengine/context"
 	"github.com/bilibili/gengine/engine"
+	"plugin"
 	"testing"
 )
 
 //定义规则，由运营部门需提供统计指标、决策树
-const rules = `
+const template = `
 rule "rule1" "测试顺序执行模式" salience 1 //格式：rule "规则名" "规则描述" salience 优先级(数字大的先执行)
 begin
 localvar = 1 //局部变量
@@ -89,7 +90,7 @@ func TestSingle(t *testing.T) {
 
 	//构建规则
 	ruleBuilder := builder.NewRuleBuilder(dataContext)
-	if err := ruleBuilder.BuildRuleFromString(rules); err != nil {
+	if err := ruleBuilder.BuildRuleFromString(template); err != nil {
 		t.Fatalf("build rule err: %v\n", err)
 	}
 
@@ -130,7 +131,7 @@ func TestPool(t *testing.T) {
 	}
 
 	//初始化规则引擎池，提供并发处理能力
-	engPool, err := engine.NewGenginePool(poolMinLen, poolMaxLen, model, rules, apis)
+	engPool, err := engine.NewGenginePool(poolMinLen, poolMaxLen, model, template, apis)
 	if err != nil {
 		t.Fatalf("build rule err: %v\n", err)
 	}
@@ -160,4 +161,63 @@ func TestPool(t *testing.T) {
 		t.Fatalf("execute rule error: %v\n", err)
 	}
 	t.Logf("student.Grade=%s\n", student.Grade)
+}
+
+//这里一定要定义一个和插件里方法同名的接口
+type Animal interface {
+	Action()
+}
+
+func TestPlugin(t *testing.T) {
+	// 1. open the so file to load the symbols
+	plug, err := plugin.Open("plugin/plugin_Dog_d.so")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// 2. look up a symbol (an exported function or variable)
+	sym, err := plug.Lookup("Dog") //大写
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// 3. Assert that loaded symbol is of a desired type
+	dog, ok := sym.(Animal)
+	if !ok {
+		t.Fatal("unexpected type from module symbol")
+	}
+
+	// 4. use the module
+	dog.Action()
+}
+
+const template2 = `
+rule "plugin gengine" "测试gengine基于插件的热加载"
+begin
+d.Action()
+end
+`
+
+func TestPluginGengine(t *testing.T) {
+	dataContext := context.NewDataContext()
+
+	//PluginLoader这个方法扩展性设计的不太好，插件可能同时导出多个变量
+	_, _, e := dataContext.PluginLoader("plugin/plugin_Dog_d.so") //Dog：插件导出的变量名；d：规则内使用的变量名
+	if e != nil {
+		panic(e)
+	}
+
+	//初始化规则引擎
+	eng := engine.NewGengine()
+
+	//构建规则
+	ruleBuilder := builder.NewRuleBuilder(dataContext)
+	if err := ruleBuilder.BuildRuleFromString(template2); err != nil {
+		t.Fatalf("build rule err: %v\n", err)
+	}
+
+	//执行规则
+	if err := eng.Execute(ruleBuilder, true); err != nil {
+		t.Fatalf("execute rule error: %v\n", err)
+	}
 }

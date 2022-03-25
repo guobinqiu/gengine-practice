@@ -1,5 +1,11 @@
 # gengine practice
 
+### Build plugin (for hot update)
+
+```
+go build -buildmode=plugin -o plugin/plugin_Dog_d.so plugin/plugin_dog.go
+```
+
 ### Run Test
 
 ```
@@ -54,11 +60,4 @@ action3
     gengine_test.go:162: student.Grade=你简直是个天才
 --- PASS: TestPool (0.02s)
 PASS
-```
-
-### Plugin (Hot Update)
-
-```
-go build -buildmode=plugin -o=test/plugin/plugin_M_m.so test/plugin/plugin_superman.go
-go test -v test/plugin/plugin_test.go
 ```
